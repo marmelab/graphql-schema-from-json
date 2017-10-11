@@ -14,8 +14,11 @@ import { pluralize, camelize } from 'inflection';
 
 import getTypesFromData from './getTypesFromData';
 import getFilterTypesFromData from './getFilterTypesFromData';
-import isRelationshipField from './isRelationshipField';
 import { getRelatedType } from './nameConverter';
+import isRelationshipFieldImport from './isRelationshipField';
+
+export * from './nameConverter';
+export const isRelationshipField = isRelationshipFieldImport;
 
 /**
  * Get a GraphQL schema from data
