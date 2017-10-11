@@ -101,10 +101,12 @@ export default (data, userOptions = {}) => {
     const queryType = new GraphQLObjectType({
         name: 'Query',
         fields: types.reduce((fields, type) => {
+            const primaryKey = options.getPrimaryKey(type.name);
+
             fields[type.name] = {
                 type: typesByName[type.name],
                 args: {
-                    id: { type: new GraphQLNonNull(GraphQLID) },
+                    [primaryKey]: { type: new GraphQLNonNull(GraphQLID) },
                 },
             };
             fields[`all${camelize(pluralize(type.name))}`] = {

@@ -308,7 +308,7 @@ test('allows to override primaryKey for each entity', () => {
         getPrimaryKey: entityName =>
             entityName === 'feet' ? 'customId' : 'anotherCustomId',
     });
-    // console.log()
+
     const feetFields = schema.getTypeMap().Foot.getFields();
     expect(feetFields).toHaveProperty('customId');
     expect(feetFields.customId.type).toEqual(new GraphQLNonNull(GraphQLID));
