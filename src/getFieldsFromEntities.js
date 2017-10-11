@@ -26,7 +26,7 @@ import getValuesFromEntities from './getValuesFromEntities';
  * //    user_id: { type: new GraphQLNonNull(GraphQLString) },
  * // };
  */
-export default (entities, checkRequired = true) => {
+export default (entities, checkRequired = true, primaryKey) => {
     const fieldValues = getValuesFromEntities(entities);
     const nbValues = entities.length;
     return Object.keys(fieldValues).reduce((fields, fieldName) => {
@@ -36,7 +36,8 @@ export default (entities, checkRequired = true) => {
                 fieldValues[fieldName],
                 checkRequired
                     ? fieldValues[fieldName].length === nbValues
-                    : false
+                    : false,
+                primaryKey
             ),
         };
         return fields;

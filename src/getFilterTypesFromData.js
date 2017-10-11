@@ -8,6 +8,7 @@ import getFieldsFromEntities from './getFieldsFromEntities';
 import getValuesFromEntities from './getValuesFromEntities';
 import getTypeFromValues from './getTypeFromValues';
 import { getTypeFromKey } from './nameConverter';
+import defaultGetPrimaryKey from './getPrimaryKey';
 
 const getRangeFiltersFromEntities = entities => {
     const fieldValues = getValuesFromEntities(entities);
@@ -87,20 +88,26 @@ const getRangeFiltersFromEntities = entities => {
  * //     }),
  * // }
  */
-export default data =>
-    Object.keys(data).reduce(
-        (types, key) =>
-            Object.assign({}, types, {
-                [getTypeFromKey(key)]: new GraphQLInputObjectType({
-                    name: `${getTypeFromKey(key)}Filter`,
-                    fields: Object.assign(
-                        {
-                            q: { type: GraphQLString },
-                        },
-                        getFieldsFromEntities(data[key], false),
-                        getRangeFiltersFromEntities(data[key])
-                    ),
-                }),
+export default (data, userOptions = {}) => {
+    const options = {
+        ...{ getPrimaryKey: defaultGetPrimaryKey },
+        ...userOptions,
+    };
+
+    return Object.keys(data).reduce((types, key) => {
+        const primaryKey = options.getPrimaryKey(key);
+
+        return Object.assign({}, types, {
+            [getTypeFromKey(key)]: new GraphQLInputObjectType({
+                name: `${getTypeFromKey(key)}Filter`,
+                fields: Object.assign(
+                    {
+                        q: { type: GraphQLString },
+                    },
+                    getFieldsFromEntities(data[key], false, primaryKey),
+                    getRangeFiltersFromEntities(data[key])
+                ),
             }),
-        {}
-    );
+        });
+    }, {});
+};

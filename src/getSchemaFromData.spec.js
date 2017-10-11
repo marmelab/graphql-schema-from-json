@@ -298,3 +298,24 @@ test('pluralizes and capitalizes correctly', () => {
     expect(types).toHaveProperty('Foot');
     expect(types).toHaveProperty('Category');
 });
+
+test('allows to override primaryKey for each entity', () => {
+    const data = {
+        feet: [{ customId: 1, size: 42 }, { customId: 2, size: 39 }],
+        categories: [{ anotherCustomId: 1, name: 'foo' }],
+    };
+    const schema = getSchemaFromData(data, {
+        getPrimaryKey: entityName =>
+            entityName === 'feet' ? 'customId' : 'anotherCustomId',
+    });
+    // console.log()
+    const feetFields = schema.getTypeMap().Foot.getFields();
+    expect(feetFields).toHaveProperty('customId');
+    expect(feetFields.customId.type).toEqual(new GraphQLNonNull(GraphQLID));
+
+    const categoriesFields = schema.getTypeMap().Category.getFields();
+    expect(categoriesFields).toHaveProperty('anotherCustomId');
+    expect(categoriesFields.anotherCustomId.type).toEqual(
+        new GraphQLNonNull(GraphQLID)
+    );
+});

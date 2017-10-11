@@ -27,6 +27,33 @@ const data = {
     ],
 };
 
+const dataCustomIds = {
+    posts: [
+        {
+            postId: 1,
+            title: 'Lorem Ipsum',
+            views: 254,
+            user_id: 123,
+        },
+        {
+            postId: 2,
+            title: 'Sic Dolor amet',
+            views: 65,
+            user_id: 456,
+        },
+    ],
+    users: [
+        {
+            userId: 123,
+            name: 'John Doe',
+        },
+        {
+            userId: 456,
+            name: 'Jane Doe',
+        },
+    ],
+};
+
 /*
 const PostType = new GraphQLObjectType({
     name: 'PostFilter',
@@ -63,17 +90,31 @@ test('creates one filter field per entity field', () => {
     expect(PostFilterFields.title.type.toString()).toEqual('String');
     expect(PostFilterFields.views.type.toString()).toEqual('Int');
     expect(PostFilterFields.user_id.type.toString()).toEqual('ID');
-    const CommentFilterFields = filterTypes.User.getFields();
-    expect(CommentFilterFields.id.type.toString()).toEqual('ID');
-    expect(CommentFilterFields.name.type.toString()).toEqual('String');
+    const UserFilterFields = filterTypes.User.getFields();
+    expect(UserFilterFields.id.type.toString()).toEqual('ID');
+    expect(UserFilterFields.name.type.toString()).toEqual('String');
+});
+
+test('allows to override each entity primary key', () => {
+    const filterTypes = getFilterTypesFromData(dataCustomIds, {
+        getPrimaryKey: typeName => (typeName === 'posts' ? 'postId' : 'userId'),
+    });
+    const PostFilterFields = filterTypes.Post.getFields();
+    expect(PostFilterFields.postId.type.toString()).toEqual('ID');
+    expect(PostFilterFields.title.type.toString()).toEqual('String');
+    expect(PostFilterFields.views.type.toString()).toEqual('Int');
+    expect(PostFilterFields.user_id.type.toString()).toEqual('ID');
+    const UserFilterFields = filterTypes.User.getFields();
+    expect(UserFilterFields.userId.type.toString()).toEqual('ID');
+    expect(UserFilterFields.name.type.toString()).toEqual('String');
 });
 
 test('creates one q field per entity field', () => {
     const filterTypes = getFilterTypesFromData(data);
     const PostFilterFields = filterTypes.Post.getFields();
     expect(PostFilterFields.q.type.toString()).toEqual('String');
-    const CommentFilterFields = filterTypes.User.getFields();
-    expect(CommentFilterFields.q.type.toString()).toEqual('String');
+    const UserFilterFields = filterTypes.User.getFields();
+    expect(UserFilterFields.q.type.toString()).toEqual('String');
 });
 
 test('creates 4 fields for number field for range filters', () => {
@@ -85,7 +126,7 @@ test('creates 4 fields for number field for range filters', () => {
     expect(PostFilterFields.views_gte.type.toString()).toEqual('Int');
 });
 
-test('does not create vomparison fiels for non-number fields', () => {
+test('does not create comparison fiels for non-number fields', () => {
     const filterTypes = getFilterTypesFromData(data);
     const PostFilterFields = filterTypes.Post.getFields();
     expect(PostFilterFields.title_lte).toBeUndefined();
