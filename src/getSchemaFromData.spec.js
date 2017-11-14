@@ -181,10 +181,10 @@ test('first look at HarperDB Schema', () => {
 
     const queries = getSchemaFromData(harperSQL);
 
-    //console.log(typeMap);
-    //console.log(queries);
-    console.log(printSchema(queries));
-    // console.log(typeMap['Attribute'].getFields());
+    ////console.log(typeMap);
+    ////console.log(queries);
+    //console.log(printSchema(queries));
+    // //console.log(typeMap['Attribute'].getFields());
     // const queries = getSchemaFromData(newdata)
     // .getQueryType()
     // .getFields();
