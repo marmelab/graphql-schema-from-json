@@ -13,12 +13,12 @@ export default (schemas = [], tables = []) => {
         for (let i = 0; i < schemas.length; i++) {
             const attribute = schemas[i].name;
             tables[i].forEach(element => {
-                for(var j in element){
-                    if(j == schemas[i].hash_attribute){    
-                        element["id"] = element[j];
-                        delete element[j];                        
+                for (var j in element) {
+                    if (j == schemas[i].hash_attribute) {
+                        element['id'] = element[j];
+                        delete element[j];
                         break;
-                    }                    
+                    }
                 }
             });
             objectData[attribute] = tables[i];
