@@ -35,6 +35,10 @@ let simplesqlresult = [
         product_id: 4321,
         productname: 'Chang',
     },
+    {
+        product_id: 4321,
+        productname: 'Cha',
+    },
 ];
 
 let schema = {
@@ -504,8 +508,8 @@ test('generate graphQL schema based on simple schema and data with field_id synt
     const testSQL = [simplesqlresult];
     let q = Converter(testSchema, testSQL);
 
-    console.log(q);
-    queries = getSchemaFromData(q);
+    // console.log(q);
+    let queries = getSchemaFromData(q);
     console.log(printSchema(queries));
 });
 
@@ -513,8 +517,7 @@ test('generate graphQL schema based on more complex schema and data using the ha
     const testSchema = [schema];
     const testSQL = [sqlresult];
     let q = Converter(testSchema, testSQL);
-
-    console.log(q);
-    queries = getSchemaFromData(q);
+    // console.log(q);
+    let queries = getSchemaFromData(q);
     console.log(printSchema(queries));
 });

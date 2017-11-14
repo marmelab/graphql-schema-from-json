@@ -3,16 +3,25 @@
  * @param {[]} fieldName 'tables []'
  * @ {[]} 'table schemas []'
  */
-export default (tables = [], schemas = []) => {
+export default (schemas = [], tables = []) => {
     let objectData = {};
     if (
-        tables.length == schemas.length &&
-        tables.length > 0 &&
-        schemas.length > 0
+        schemas.length == tables.length &&
+        schemas.length > 0 &&
+        tables.length > 0
     ) {
-        for (let i = 0; i < tables.length; i++) {
-            const attribute = tables[i].name;
-            objectData[attribute] = schemas[i];
+        for (let i = 0; i < schemas.length; i++) {
+            const attribute = schemas[i].name;
+            tables[i].forEach(element => {
+                for(var j in element){
+                    if(j == schemas[i].hash_attribute){    
+                        element["id"] = element[j];
+                        delete element[j];                        
+                        break;
+                    }                    
+                }
+            });
+            objectData[attribute] = tables[i];
         }
         return objectData;
     } else {
