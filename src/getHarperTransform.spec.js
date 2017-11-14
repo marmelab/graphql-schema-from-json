@@ -89,43 +89,41 @@ const harperData2 = {
 
 const fromSql = [
     {
-        color: "green",
+        color: 'green',
         id: 1,
         last_name: 12,
-        name: "robin"
+        name: 'robin',
     },
     {
-        color: "black",
+        color: 'black',
         id: 2,
         last_name: 13,
-        name: "sparrow"
-    }
+        name: 'sparrow',
+    },
 ];
 
 const fromSql2 = [
     {
         asian_id: 1,
         age: 15,
-        name: "Oscar",
-        id: 101
+        name: 'Oscar',
+        id: 101,
     },
     {
         asian_id: 2,
         age: 28,
-        name: "Robert",
-        id: 102
+        name: 'Robert',
+        id: 102,
     },
     {
         asian_id: null,
         age: 34,
-        name: "Will",
-        id: 103
-    }
+        name: 'Will',
+        id: 103,
+    },
 ];
 
-
 test('first look at HarperDB Schema', () => {
-
     let queries = getSchemaFromData(harperSQL);
 
     ////console.log(typeMap);
