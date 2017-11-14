@@ -9,134 +9,511 @@ import {
     printSchema,
 } from 'graphql';
 import getSchemaFromData from './getSchemaFromData';
-import Converter from './Converter';
+import Converter from './harperSchemaConverter';
 
-const newdata = {
+let simpleschema = {
+    id: 'd5b33b482-156d-4b21-b9dc-dbe3ec391277',
+    hash_attribute: 'product_id',
+    name: 'products',
+    schema: 'northwnd',
     attributes: [
         {
-            attribute: 'color',
+            attribute: 'product_id',
         },
         {
-            attribute: 'last_name',
-        },
-        {
-            attribute: 'name',
-        },
-        {
-            attribute: 'id',
+            attribute: 'productname',
         },
     ],
 };
 
-const harperSQL = {
-    asian: [
-        {
-            color: 'green',
-            rank: 1,
-            last_name: 12,
-            name: 'robin',
-        },
-        {
-            color: 'black',
-            rank: 2,
-            last_name: 13,
-            name: 'sparrow',
-        },
-    ],
-};
-
-const harperData = {
-    hash_attribute: 'id',
-    name: 'asian',
-    schema: 'birds',
-    id: '11a457de-b5f5-4c17-9d7b-5d257dfec158',
-    attributes: [
-        {
-            attribute: 'color',
-        },
-        {
-            attribute: 'last_name',
-        },
-        {
-            attribute: 'name',
-        },
-        {
-            attribute: 'id',
-        },
-    ],
-};
-
-const harperData2 = {
-    hash_attribute: 'id',
-    name: 'people',
-    schema: 'people',
-    id: '11a457de-b5f5-4c17-9d7b-5d257dfec158',
-    attributes: [
-        {
-            attribute: 'asian_id',
-        },
-        {
-            attribute: 'age',
-        },
-        {
-            attribute: 'name',
-        },
-        {
-            attribute: 'id',
-        },
-    ],
-};
-
-const fromSql = [
+let simplesqlresult = [
     {
-        color: 'green',
-        id: 1,
-        last_name: 12,
-        name: 'robin',
+        product_id: 1234,
+        productname: 'Chai',
     },
     {
-        color: 'black',
-        id: 2,
-        last_name: 13,
-        name: 'sparrow',
+        product_id: 4321,
+        productname: 'Chang',
     },
 ];
 
-const fromSql2 = [
+let schema = {
+    id: 'd5b5b482-156d-4b21-b9dc-dbe3ec391277',
+    hash_attribute: 'productid',
+    name: 'products',
+    schema: 'northwnd',
+    attributes: [
+        {
+            attribute: 'unitsnnorder',
+        },
+        {
+            attribute: 'productname',
+        },
+        {
+            attribute: 'unitsinstock',
+        },
+        {
+            attribute: 'categoryid',
+        },
+        {
+            attribute: 'reorderlevel',
+        },
+        {
+            attribute: 'productid',
+        },
+        {
+            attribute: 'discontinued',
+        },
+        {
+            attribute: 'supplierid',
+        },
+        {
+            attribute: 'quantityperunit',
+        },
+        {
+            attribute: 'unitprice',
+        },
+    ],
+};
+
+let sqlresult = [
     {
-        asian_id: 1,
-        age: 15,
-        name: 'Oscar',
-        id: 101,
+        unitsnnorder: 0,
+        productname: 'Chai',
+        categoryid: 1,
+        reorderlevel: 10,
+        unitsinstock: 39,
+        productid: 1,
+        discontinued: 'False',
+        supplierid: 1,
+        quantityperunit: '10 boxes x 20 bags',
+        unitprice: 18,
     },
     {
-        asian_id: 2,
-        age: 28,
-        name: 'Robert',
-        id: 102,
+        unitsnnorder: 40,
+        productname: 'Chang',
+        categoryid: 1,
+        reorderlevel: 25,
+        unitsinstock: 17,
+        productid: 2,
+        discontinued: 'False',
+        supplierid: 1,
+        quantityperunit: '24 - 12 oz bottles',
+        unitprice: 19,
     },
     {
-        asian_id: null,
-        age: 34,
-        name: 'Will',
-        id: 103,
+        unitsnnorder: 70,
+        productname: 'Aniseed Syrup',
+        categoryid: 2,
+        reorderlevel: 25,
+        unitsinstock: 13,
+        productid: 3,
+        discontinued: 'False',
+        supplierid: 1,
+        quantityperunit: '12 - 550 ml bottles',
+        unitprice: 10,
+    },
+    {
+        unitsnnorder: 0,
+        productname: "Chef Anton's Cajun Seasoning",
+        categoryid: 2,
+        reorderlevel: 0,
+        unitsinstock: 53,
+        productid: 4,
+        discontinued: 'False',
+        supplierid: 2,
+        quantityperunit: '48 - 6 oz jars',
+        unitprice: 22,
+    },
+    {
+        unitsnnorder: 0,
+        productname: "Chef Anton's Gumbo Mix",
+        categoryid: 2,
+        reorderlevel: 0,
+        unitsinstock: 0,
+        productid: 5,
+        discontinued: 'True',
+        supplierid: 2,
+        quantityperunit: '36 boxes',
+        unitprice: 21.35,
+    },
+    {
+        unitsnnorder: 0,
+        productname: "Grandma's Boysenberry Spread",
+        categoryid: 2,
+        reorderlevel: 25,
+        unitsinstock: 120,
+        productid: 6,
+        discontinued: 'False',
+        supplierid: 3,
+        quantityperunit: '12 - 8 oz jars',
+        unitprice: 25,
+    },
+    {
+        unitsnnorder: 0,
+        productname: "Uncle Bob's Organic Dried Pears",
+        categoryid: 7,
+        reorderlevel: 10,
+        unitsinstock: 15,
+        productid: 7,
+        discontinued: 'False',
+        supplierid: 3,
+        quantityperunit: '12 - 1 lb pkgs.',
+        unitprice: 30,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Northwoods Cranberry Sauce',
+        categoryid: 2,
+        reorderlevel: 0,
+        unitsinstock: 6,
+        productid: 8,
+        discontinued: 'False',
+        supplierid: 3,
+        quantityperunit: '12 - 12 oz jars',
+        unitprice: 40,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Mishi Kobe Niku',
+        categoryid: 6,
+        reorderlevel: 0,
+        unitsinstock: 29,
+        productid: 9,
+        discontinued: 'True',
+        supplierid: 4,
+        quantityperunit: '18 - 500 g pkgs.',
+        unitprice: 97,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Ikura',
+        categoryid: 8,
+        reorderlevel: 0,
+        unitsinstock: 31,
+        productid: 10,
+        discontinued: 'False',
+        supplierid: 4,
+        quantityperunit: '12 - 200 ml jars',
+        unitprice: 31,
+    },
+    {
+        unitsnnorder: 30,
+        productname: 'Queso Cabrales',
+        categoryid: 4,
+        reorderlevel: 30,
+        unitsinstock: 22,
+        productid: 11,
+        discontinued: 'False',
+        supplierid: 5,
+        quantityperunit: '1 kg pkg.',
+        unitprice: 21,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Queso Manchego La Pastora',
+        categoryid: 4,
+        reorderlevel: 0,
+        unitsinstock: 86,
+        productid: 12,
+        discontinued: 'False',
+        supplierid: 5,
+        quantityperunit: '10 - 500 g pkgs.',
+        unitprice: 38,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Konbu',
+        categoryid: 8,
+        reorderlevel: 5,
+        unitsinstock: 24,
+        productid: 13,
+        discontinued: 'False',
+        supplierid: 6,
+        quantityperunit: '2 kg box',
+        unitprice: 6,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Tofu',
+        categoryid: 7,
+        reorderlevel: 0,
+        unitsinstock: 35,
+        productid: 14,
+        discontinued: 'False',
+        supplierid: 6,
+        quantityperunit: '40 - 100 g pkgs.',
+        unitprice: 23.25,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Genen Shouyu',
+        categoryid: 2,
+        reorderlevel: 5,
+        unitsinstock: 39,
+        productid: 15,
+        discontinued: 'False',
+        supplierid: 6,
+        quantityperunit: '24 - 250 ml bottles',
+        unitprice: 15.5,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Pavlova',
+        categoryid: 3,
+        reorderlevel: 10,
+        unitsinstock: 29,
+        productid: 16,
+        discontinued: 'False',
+        supplierid: 7,
+        quantityperunit: '32 - 500 g boxes',
+        unitprice: 17.45,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Alice Mutton',
+        categoryid: 6,
+        reorderlevel: 0,
+        unitsinstock: 0,
+        productid: 17,
+        discontinued: 'True',
+        supplierid: 7,
+        quantityperunit: '20 - 1 kg tins',
+        unitprice: 39,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Carnarvon Tigers',
+        categoryid: 8,
+        reorderlevel: 0,
+        unitsinstock: 42,
+        productid: 18,
+        discontinued: 'False',
+        supplierid: 7,
+        quantityperunit: '16 kg pkg.',
+        unitprice: 62.5,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Teatime Chocolate Biscuits',
+        categoryid: 3,
+        reorderlevel: 5,
+        unitsinstock: 25,
+        productid: 19,
+        discontinued: 'False',
+        supplierid: 8,
+        quantityperunit: '10 boxes x 12 pieces',
+        unitprice: 9.2,
+    },
+    {
+        unitsnnorder: 0,
+        productname: "Sir Rodney's Marmalade",
+        categoryid: 3,
+        reorderlevel: 0,
+        unitsinstock: 40,
+        productid: 20,
+        discontinued: 'False',
+        supplierid: 8,
+        quantityperunit: '30 gift boxes',
+        unitprice: 81,
+    },
+    {
+        unitsnnorder: 40,
+        productname: "Sir Rodney's Scones",
+        categoryid: 3,
+        reorderlevel: 5,
+        unitsinstock: 3,
+        productid: 21,
+        discontinued: 'False',
+        supplierid: 8,
+        quantityperunit: '24 pkgs. x 4 pieces',
+        unitprice: 10,
+    },
+    {
+        unitsnnorder: 0,
+        productname: "Gustaf's Kn\ufffdckebr\ufffdd",
+        categoryid: 5,
+        reorderlevel: 25,
+        unitsinstock: 104,
+        productid: 22,
+        discontinued: 'False',
+        supplierid: 9,
+        quantityperunit: '24 - 500 g pkgs.',
+        unitprice: 21,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Tunnbr\ufffdd',
+        categoryid: 5,
+        reorderlevel: 25,
+        unitsinstock: 61,
+        productid: 23,
+        discontinued: 'False',
+        supplierid: 9,
+        quantityperunit: '12 - 250 g pkgs.',
+        unitprice: 9,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Guaran\ufffd Fant\ufffdstica',
+        categoryid: 1,
+        reorderlevel: 0,
+        unitsinstock: 20,
+        productid: 24,
+        discontinued: 'True',
+        supplierid: 10,
+        quantityperunit: '12 - 355 ml cans',
+        unitprice: 4.5,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'NuNuCa Nu\ufffd-Nougat-Creme',
+        categoryid: 3,
+        reorderlevel: 30,
+        unitsinstock: 76,
+        productid: 25,
+        discontinued: 'False',
+        supplierid: 11,
+        quantityperunit: '20 - 450 g glasses',
+        unitprice: 14,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Gumb\ufffdr Gummib\ufffdrchen',
+        categoryid: 3,
+        reorderlevel: 0,
+        unitsinstock: 15,
+        productid: 26,
+        discontinued: 'False',
+        supplierid: 11,
+        quantityperunit: '100 - 250 g bags',
+        unitprice: 31.23,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Schoggi Schokolade',
+        categoryid: 3,
+        reorderlevel: 30,
+        unitsinstock: 49,
+        productid: 27,
+        discontinued: 'False',
+        supplierid: 11,
+        quantityperunit: '100 - 100 g pieces',
+        unitprice: 43.9,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'R\ufffdssle Sauerkraut',
+        categoryid: 7,
+        reorderlevel: 0,
+        unitsinstock: 26,
+        productid: 28,
+        discontinued: 'True',
+        supplierid: 12,
+        quantityperunit: '25 - 825 g cans',
+        unitprice: 45.6,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Th\ufffdringer Rostbratwurst',
+        categoryid: 6,
+        reorderlevel: 0,
+        unitsinstock: 0,
+        productid: 29,
+        discontinued: 'True',
+        supplierid: 12,
+        quantityperunit: '50 bags x 30 sausgs.',
+        unitprice: 123.79,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Nord-Ost Matjeshering',
+        categoryid: 8,
+        reorderlevel: 15,
+        unitsinstock: 10,
+        productid: 30,
+        discontinued: 'False',
+        supplierid: 13,
+        quantityperunit: '10 - 200 g glasses',
+        unitprice: 25.89,
+    },
+    {
+        unitsnnorder: 70,
+        productname: 'Gorgonzola Telino',
+        categoryid: 4,
+        reorderlevel: 20,
+        unitsinstock: 0,
+        productid: 31,
+        discontinued: 'False',
+        supplierid: 14,
+        quantityperunit: '12 - 100 g pkgs',
+        unitprice: 12.5,
+    },
+    {
+        unitsnnorder: 40,
+        productname: 'Mascarpone Fabioli',
+        categoryid: 4,
+        reorderlevel: 25,
+        unitsinstock: 9,
+        productid: 32,
+        discontinued: 'False',
+        supplierid: 14,
+        quantityperunit: '24 - 200 g pkgs.',
+        unitprice: 32,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Geitost',
+        categoryid: 4,
+        reorderlevel: 20,
+        unitsinstock: 112,
+        productid: 33,
+        discontinued: 'False',
+        supplierid: 15,
+        quantityperunit: '500 g',
+        unitprice: 2.5,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Sasquatch Ale',
+        categoryid: 1,
+        reorderlevel: 15,
+        unitsinstock: 111,
+        productid: 34,
+        discontinued: 'False',
+        supplierid: 16,
+        quantityperunit: '24 - 12 oz bottles',
+        unitprice: 14,
+    },
+    {
+        unitsnnorder: 0,
+        productname: 'Steeleye Stout',
+        categoryid: 1,
+        reorderlevel: 15,
+        unitsinstock: 20,
+        productid: 35,
+        discontinued: 'False',
+        supplierid: 16,
+        quantityperunit: '24 - 12 oz bottles',
+        unitprice: 18,
     },
 ];
 
-test('first look at HarperDB Schema', () => {
-    let queries = getSchemaFromData(harperSQL);
+test('generate graphQL schema based on simple schema and data with field_id syntax', () => {
+    const testSchema = [simpleschema];
+    const testSQL = [simplesqlresult];
+    let q = Converter(testSchema, testSQL);
 
-    ////console.log(typeMap);
-    ////console.log(queries);
-    //console.log(printSchema(queries));
-    // //console.log(typeMap['Attribute'].getFields());
-    // const queries = getSchemaFromData(newdata)
-    // .getQueryType()
-    // .getFields();
-    const testTable = [harperData, harperData2];
-    const testTuple = [fromSql, fromSql2];
-    let q = Converter(testTable, testTuple);
-    // q = {"asian":[{"color":"green","id":1,"last_name":12,"name":"robin"},{"color":"black","id":2,"last_name":13,"name":"sparrow"}]};
+    console.log(q);
+    queries = getSchemaFromData(q);
+    console.log(printSchema(queries));
+});
+
+test('generate graphQL schema based on more complex schema and data using the hash_attribute as the id', () => {
+    const testSchema = [schema];
+    const testSQL = [sqlresult];
+    let q = Converter(testSchema, testSQL);
+
     console.log(q);
     queries = getSchemaFromData(q);
     console.log(printSchema(queries));
