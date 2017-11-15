@@ -10,8 +10,8 @@ import {
 } from 'graphql';
 import getSchemaFromData from './getSchemaFromData';
 import Converter from './harperSchemaConverter';
-
-let simpleschema = {
+import GetHashAttributeId from './getHashAttributeId';
+let productSchema = {
     id: 'd5b33b482-156d-4b21-b9dc-dbe3ec391277',
     hash_attribute: 'product_id',
     name: 'products',
@@ -26,20 +26,68 @@ let simpleschema = {
     ],
 };
 
-let simplesqlresult = [
+let productSqlResult = [
     {
         product_id: 1234,
         productname: 'Chai',
+        customer_id: 1,
     },
     {
         product_id: 4321,
         productname: 'Chang',
+        customer_id: 2,
     },
     {
-        product_id: 4321,
+        product_id: 4444,
         productname: 'Cha',
+        customer_id: 3,
+    },
+    {
+        product_id: 4333,
+        productname: 'Chu',
+        customer_id: 3,
     },
 ];
+
+let customerSchema = {
+    id: 'd5b33b482-156d-4b21-b9dc-dbe3ec391277',
+    hash_attribute: 'customer_id',
+    name: 'customers',
+    schema: 'northwnd',
+    attributes: [
+        {
+            attribute: 'customer_id',
+        },
+        {
+            attribute: 'customername',
+        },
+    ],
+};
+
+let customerSqlResult = [
+    {
+        customer_id: 1,
+        customername: 'Robert',
+    },
+    {
+        customer_id: 2,
+        customername: 'Robin',
+    },
+    {
+        customer_id: 3,
+        customername: 'Ronan',
+    },
+];
+
+const productSqlResultType = new GraphQLObjectType({
+    name: 'Product',
+    fields: () => ({
+        product_id: { type: new GraphQLNonNull(GraphQLID) },
+        productname: { type: new GraphQLNonNull(GraphQLString) },
+        customer_id: { type: new GraphQLInt },
+    }),
+});
+
 
 let schema = {
     id: 'd5b5b482-156d-4b21-b9dc-dbe3ec391277',
@@ -503,21 +551,146 @@ let sqlresult = [
     },
 ];
 
-test('generate graphQL schema based on simple schema and data with field_id syntax', () => {
-    const testSchema = [simpleschema];
-    const testSQL = [simplesqlresult];
+// test('generate graphQL schema based on simple schema and data with field_id syntax', () => {
+//     const testSchema = [productSchema];
+//     const testSQL = [productSqlResult];
+//     let q = Converter(testSchema, testSQL);
+
+//     // console.log(q);
+//     const schema = getSchemaFromData(q, {
+//         getPrimaryKey: entityName => {
+//             return GetHashAttributeId(entityName, testSchema); // this function maked hash_attribute to id
+//             console.log(entityName);
+//         },
+//     });
+//     // let queries = getSchemaFromData(q);
+//     console.log(printSchema(schema));
+// });
+
+// test('generate graphQL schema based on more complex schema and data using the hash_attribute as the id', () => {
+//     const testSchema = [schema];
+//     const testSQL = [sqlresult];
+//     let q = Converter(testSchema, testSQL);
+//     // console.log(q);
+//     const schemasQl = getSchemaFromData(q, {
+//                 getPrimaryKey: entityName => {
+//                     return GetHashAttributeId(entityName, testSchema); // this function maked hash_attribute to id 
+//                     console.log(entityName);
+//                 },
+//     });
+//     console.log(printSchema(schemasQl));
+// });
+
+
+test('creates three query fields per data type', () => {
+    const testSchema = [productSchema, customerSchema];
+    const testSQL = [productSqlResult, customerSqlResult];
     let q = Converter(testSchema, testSQL);
 
     // console.log(q);
-    let queries = getSchemaFromData(q);
-    console.log(printSchema(queries));
+    let schema = getSchemaFromData(q, {
+        getPrimaryKey: entityName => {
+            return GetHashAttributeId(entityName, testSchema); // this function maked hash_attribute to id
+        },
+    });
+    console.log(printSchema(schema));
+    let queries = schema.getQueryType().getFields();
+    // console.log(queries);
+    expect(queries['Product'].type.name).toEqual(productSqlResultType.name);
+    
+    expect(queries['allProducts'].args[0].name).toEqual('page');
+    expect(queries['allProducts'].args[0].type).toEqual(GraphQLInt);
+    expect(queries['allProducts'].args[1].name).toEqual('perPage');
+    expect(queries['allProducts'].args[1].type).toEqual(GraphQLInt);
+    expect(queries['allProducts'].args[2].name).toEqual('sortField');
+    expect(queries['allProducts'].args[2].type).toEqual(GraphQLString);
+    expect(queries['allProducts'].args[3].name).toEqual('sortOrder');
+    expect(queries['allProducts'].args[3].type).toEqual(GraphQLString);
+    expect(queries['allProducts'].args[4].name).toEqual('filter');
+    expect(queries['allProducts'].args[4].type.toString()).toEqual('ProductFilter');
+    expect(queries['_allProductsMeta'].type.toString()).toEqual('ListMetadata');
 });
 
-test('generate graphQL schema based on more complex schema and data using the hash_attribute as the id', () => {
-    const testSchema = [schema];
-    const testSQL = [sqlresult];
+test('creates one field per relationship', () => {
+    const testSchema = [productSchema, customerSchema];
+    const testSQL = [productSqlResult, customerSqlResult];
     let q = Converter(testSchema, testSQL);
-    // console.log(q);
-    let queries = getSchemaFromData(q);
-    console.log(printSchema(queries));
+
+    const typeMap = getSchemaFromData(q, {
+        getPrimaryKey: entityName => {
+            return GetHashAttributeId(entityName, testSchema); // this function maked hash_attribute to id
+        },
+    }).getTypeMap();
+
+    // one Customer has many products
+    expect(Object.keys(typeMap['Customer'].getFields())).toContain('Products');
+
+    // one Product has one Customer
+    expect(Object.keys(typeMap['Product'].getFields())).toContain('Customer');
+});
+
+test('creates three mutation fields per data type', () => {
+    const testSchema = [productSchema, customerSchema];
+    const testSQL = [productSqlResult, customerSqlResult];
+    let q = Converter(testSchema, testSQL);
+
+    const mutations = getSchemaFromData(q, {
+        getPrimaryKey: entityName => {
+            return GetHashAttributeId(entityName, testSchema); // this function maked hash_attribute to id
+        },
+    }).getMutationType().getFields();
+
+    expect(mutations['createProduct'].type.name).toEqual(productSqlResultType.name);
+    expect(mutations['createProduct'].args).toEqual([
+        {
+            name: 'product_id',
+            type: new GraphQLNonNull(GraphQLID),
+            defaultValue: undefined,
+            description: null,
+        },
+        {
+            name: 'productname',
+            type: new GraphQLNonNull(GraphQLString),
+            defaultValue: undefined,
+            description: null,
+        },
+        {
+            name: 'customer_id',
+            type: new GraphQLNonNull(GraphQLID),
+            defaultValue: undefined,
+            description: null,
+        },
+    ]);
+
+    expect(mutations['updateProduct'].type.name).toEqual(productSqlResultType.name);
+    expect(mutations['updateProduct'].args).toEqual([
+        {
+            name: 'product_id',
+            type: new GraphQLNonNull(GraphQLID),
+            defaultValue: undefined,
+            description: null,
+        },
+        {
+            name: 'productname',
+            type: GraphQLString,
+            defaultValue: undefined,
+            description: null,
+        },
+        {
+            name: 'customer_id',
+            type: GraphQLID,
+            defaultValue: undefined,
+            description: null,
+        },
+    ]);
+
+    expect(mutations['removeProduct'].type.name).toEqual(GraphQLBoolean.name);
+    expect(mutations['removeProduct'].args).toEqual([
+        {
+            name: 'product_id',
+            type: new GraphQLNonNull(GraphQLID),
+            defaultValue: undefined,
+            description: null,
+        },
+    ]);
 });

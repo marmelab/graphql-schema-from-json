@@ -135,7 +135,6 @@ export default (data, userOptions = {}) => {
         name: 'Mutation',
         fields: types.reduce((fields, type) => {
             const primaryKey = options.getPrimaryKey(type.name);
-
             const typeFields = typesByName[type.name].getFields();
             const nullableTypeFields = Object.keys(
                 typeFields
