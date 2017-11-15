@@ -84,10 +84,9 @@ const productSqlResultType = new GraphQLObjectType({
     fields: () => ({
         product_id: { type: new GraphQLNonNull(GraphQLID) },
         productname: { type: new GraphQLNonNull(GraphQLString) },
-        customer_id: { type: new GraphQLInt },
+        customer_id: { type: new GraphQLInt() },
     }),
 });
-
 
 let schema = {
     id: 'd5b5b482-156d-4b21-b9dc-dbe3ec391277',
@@ -574,13 +573,12 @@ let sqlresult = [
 //     // console.log(q);
 //     const schemasQl = getSchemaFromData(q, {
 //                 getPrimaryKey: entityName => {
-//                     return GetHashAttributeId(entityName, testSchema); // this function maked hash_attribute to id 
+//                     return GetHashAttributeId(entityName, testSchema); // this function maked hash_attribute to id
 //                     console.log(entityName);
 //                 },
 //     });
 //     console.log(printSchema(schemasQl));
 // });
-
 
 test('creates three query fields per data type', () => {
     const testSchema = [productSchema, customerSchema];
@@ -597,7 +595,7 @@ test('creates three query fields per data type', () => {
     let queries = schema.getQueryType().getFields();
     // console.log(queries);
     expect(queries['Product'].type.name).toEqual(productSqlResultType.name);
-    
+
     expect(queries['allProducts'].args[0].name).toEqual('page');
     expect(queries['allProducts'].args[0].type).toEqual(GraphQLInt);
     expect(queries['allProducts'].args[1].name).toEqual('perPage');
@@ -607,7 +605,9 @@ test('creates three query fields per data type', () => {
     expect(queries['allProducts'].args[3].name).toEqual('sortOrder');
     expect(queries['allProducts'].args[3].type).toEqual(GraphQLString);
     expect(queries['allProducts'].args[4].name).toEqual('filter');
-    expect(queries['allProducts'].args[4].type.toString()).toEqual('ProductFilter');
+    expect(queries['allProducts'].args[4].type.toString()).toEqual(
+        'ProductFilter'
+    );
     expect(queries['_allProductsMeta'].type.toString()).toEqual('ListMetadata');
 });
 
@@ -638,9 +638,13 @@ test('creates three mutation fields per data type', () => {
         getPrimaryKey: entityName => {
             return GetHashAttributeId(entityName, testSchema); // this function maked hash_attribute to id
         },
-    }).getMutationType().getFields();
+    })
+        .getMutationType()
+        .getFields();
 
-    expect(mutations['createProduct'].type.name).toEqual(productSqlResultType.name);
+    expect(mutations['createProduct'].type.name).toEqual(
+        productSqlResultType.name
+    );
     expect(mutations['createProduct'].args).toEqual([
         {
             name: 'product_id',
@@ -662,7 +666,9 @@ test('creates three mutation fields per data type', () => {
         },
     ]);
 
-    expect(mutations['updateProduct'].type.name).toEqual(productSqlResultType.name);
+    expect(mutations['updateProduct'].type.name).toEqual(
+        productSqlResultType.name
+    );
     expect(mutations['updateProduct'].args).toEqual([
         {
             name: 'product_id',
