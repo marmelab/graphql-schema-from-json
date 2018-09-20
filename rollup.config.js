@@ -1,15 +1,18 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import babel from 'rollup-plugin-babel';
-import builtins from 'rollup-plugin-node-builtins';
-import globals from 'rollup-plugin-node-globals';
-import json from 'rollup-plugin-json';
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
+const babel = require('rollup-plugin-babel');
+const builtins = require('rollup-plugin-node-builtins');
+const globals = require('rollup-plugin-node-globals');
+const json = require('rollup-plugin-json');
 
 export default {
-    entry: './src/index.js',
-    dest: 'lib/index.js',
-    format: 'umd',
-    moduleName: 'json-to-graphql',
+    input: './src/index.js',
+    output: {
+        file: 'lib/index.js',
+        format: 'umd',
+        name: 'json-to-grapgql',
+        exports: 'named',
+    },
     plugins: [
         resolve({
             jsnext: true,

@@ -14,11 +14,12 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "make build",
-    "format": "make format",
+    "start": "node lib/index.js",
+    "build": "NODE_ENV=production rollup -c",
+    "format": "eslint --fix ./src",
     "precommit": "lint-staged",
     "test": "jest",
-    "watch-test": "make watch-test"
+    "watch:test": "jest --watch"
   },
   "lint-staged": {
     "src/**/*.js": [
@@ -27,36 +28,37 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "~21.1.2",
-    "babel-cli": "~6.26.0",
-    "babel-core": "~6.26.0",
-    "babel-eslint": "~8.0.1",
-    "babel-jest": "~21.2.0",
-    "babel-plugin-external-helpers": "~6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "~6.23.0",
-    "babel-preset-env": "~1.6.0",
-    "eslint": "~4.8.0",
-    "eslint-config-prettier": "~2.6.0",
-    "eslint-plugin-import": "~2.7.0",
-    "eslint-plugin-jest": "~21.2.0",
-    "eslint-plugin-prettier": "~2.3.1",
-    "husky": "~0.14.3",
-    "jest": "~21.2.1",
-    "lint-staged": "~4.2.3",
-    "prettier": "~1.7.4",
-    "rollup": "~0.50.0",
-    "rollup-plugin-babel": "~3.0.2",
-    "rollup-plugin-commonjs": "~8.2.1",
-    "rollup-plugin-json": "~2.3.0",
-    "rollup-plugin-node-builtins": "~2.1.2",
-    "rollup-plugin-node-globals": "~1.1.0",
-    "rollup-plugin-node-resolve": "~3.0.0",
-    "rollup-watch": "~4.3.1"
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "7.1.0",
+    "@babel/plugin-external-helpers": "^7.0.0",
+    "@babel/plugin-transform-runtime": "7.1.0",
+    "@babel/preset-env": "7.1.0",
+    "@babel/runtime": "7.0.0",
+    "@types/jest": "23.3.2",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "9.0.0",
+    "babel-jest": "23.6.0",
+    "eslint": "5.6.0",
+    "eslint-config-prettier": "3.0.1",
+    "eslint-plugin-import": "2.14.0",
+    "eslint-plugin-jest": "21.22.0",
+    "eslint-plugin-prettier": "2.6.2",
+    "husky": "0.14.3",
+    "jest": "23.6.0",
+    "lint-staged": "7.3.0",
+    "prettier": "1.14.3",
+    "rollup": "0.66.1",
+    "rollup-plugin-babel": "^4.0.1",
+    "rollup-plugin-commonjs": "9.1.8",
+    "rollup-plugin-json": "3.1.0",
+    "rollup-plugin-node-builtins": "2.1.2",
+    "rollup-plugin-node-globals": "1.4.0",
+    "rollup-plugin-node-resolve": "3.4.0",
+    "rollup-watch": "4.3.1"
   },
   "dependencies": {
-    "graphql": "~0.11.7",
-    "graphql-type-json": "~0.1.4",
-    "inflection": "~1.12.0"
+    "graphql": "14.0.2",
+    "graphql-type-json": "0.2.1",
+    "inflection": "1.12.0"
   }
 }
