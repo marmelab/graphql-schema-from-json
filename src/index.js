@@ -1,6 +1,7 @@
-export * from './nameConverter';
 import isRelationshipFieldImport from './isRelationshipField';
-export const isRelationshipField = isRelationshipFieldImport;
-import getSchemaFromData from './getSchemaFromData';
+import getSchemaFromDataImport from './getSchemaFromData';
 
-export default getSchemaFromData;
+export * from './nameConverter';
+export const isRelationshipField = isRelationshipFieldImport;
+export default getSchemaFromDataImport;
+export const getSchemaFromData = getSchemaFromDataImport;
