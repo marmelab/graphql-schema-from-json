@@ -13,8 +13,8 @@ or
 ## Usage
 
 ```js
-import getSchemaFromData from 'graphql-schema-from-json';
-import { printSchema } from 'graphql';
+const { getSchemaFromData, printSchema } = require('graphql-schema-from-json');
+const fs = require('fs');
 
 const data = {
     posts: [
@@ -29,13 +29,19 @@ const data = {
         { id: 987, post_id: 1, body: "Consectetur adipiscing elit", date: new Date('2017-07-03') },
         { id: 995, post_id: 1, body: "Nam molestie pellentesque dui", date: new Date('2017-08-17') }
     ]
-}
+};
 
 // Get the schema as a JSON object
 const schema = getSchemaFromData(data);
 
+fs.writeFileSync('./schema', printSchema(schema), err => {
+    if (err) {
+        console.error(err);
+    }
+});
+
 // Print the GQL for this schema
-console.log(printSchema(schema));
+console.log(printSchema(schema))
 ```
 
 ## Generated Types and Queries
