@@ -9,7 +9,7 @@ export default {
     entry: './src/index.js',
     dest: 'lib/index.js',
     format: 'umd',
-    moduleName: 'json-to-grapgql',
+    moduleName: 'json-to-graphql',
     plugins: [
         resolve({
             jsnext: true,

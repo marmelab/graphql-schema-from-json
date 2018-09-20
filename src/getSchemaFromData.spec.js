@@ -6,6 +6,7 @@ import {
     GraphQLNonNull,
     GraphQLObjectType,
     GraphQLString,
+    printSchema,
 } from 'graphql';
 import getSchemaFromData from './getSchemaFromData';
 
@@ -32,6 +33,78 @@ const data = {
         {
             id: 456,
             name: 'Jane Doe',
+        },
+    ],
+};
+
+const newdata = {
+    attributes: [
+        {
+            attribute: 'color',
+        },
+        {
+            attribute: 'last_name',
+        },
+        {
+            attribute: 'name',
+        },
+        {
+            attribute: 'id',
+        },
+    ],
+};
+
+const harperSQL = {
+    asian: [
+        {
+            color: 'green',
+            rank: 1,
+            last_name: 12,
+            name: 'robin',
+        },
+        {
+            color: 'black',
+            rank: 2,
+            last_name: 13,
+            name: 'sparrow',
+        },
+    ],
+};
+
+const harperData = {
+    hash_attribute: 'id',
+    name: 'asian',
+    schema: 'birds',
+    id: '11a457de-b5f5-4c17-9d7b-5d257dfec158',
+    attributes: [
+        {
+            attribute: 'color',
+        },
+        {
+            attribute: 'last_name',
+        },
+        {
+            attribute: 'name',
+        },
+        {
+            attribute: 'id',
+        },
+    ],
+};
+
+const harperdata2 = {
+    birds: [
+        {
+            color: 'green',
+            id: 1,
+            last_name: 12,
+            name: 'robin',
+        },
+        {
+            color: 'black',
+            id: 2,
+            last_name: 13,
+            name: 'sparrow',
         },
     ],
 };
@@ -102,6 +175,20 @@ const QueryType = new GraphQLObjectType({
     },
 });
 */
+
+test('first look at HarperDB Schema', () => {
+    const typeMap = getSchemaFromData(harperdata2);
+
+    const queries = getSchemaFromData(harperSQL);
+
+    ////console.log(typeMap);
+    ////console.log(queries);
+    //console.log(printSchema(queries));
+    // //console.log(typeMap['Attribute'].getFields());
+    // const queries = getSchemaFromData(newdata)
+    // .getQueryType()
+    // .getFields();
+});
 
 test('creates one type per data type', () => {
     const typeMap = getSchemaFromData(data).getTypeMap();
@@ -297,4 +384,25 @@ test('pluralizes and capitalizes correctly', () => {
     const types = getSchemaFromData(data).getTypeMap();
     expect(types).toHaveProperty('Foot');
     expect(types).toHaveProperty('Category');
+});
+
+test('allows to override primaryKey for each entity', () => {
+    const data = {
+        feet: [{ customId: 1, size: 42 }, { customId: 2, size: 39 }],
+        categories: [{ anotherCustomId: 1, name: 'foo' }],
+    };
+    const schema = getSchemaFromData(data, {
+        getPrimaryKey: entityName =>
+            entityName === 'feet' ? 'customId' : 'anotherCustomId',
+    });
+    // console.log(printSchema(schema));
+    const feetFields = schema.getTypeMap().Foot.getFields();
+    expect(feetFields).toHaveProperty('customId');
+    expect(feetFields.customId.type).toEqual(new GraphQLNonNull(GraphQLID));
+
+    const categoriesFields = schema.getTypeMap().Category.getFields();
+    expect(categoriesFields).toHaveProperty('anotherCustomId');
+    expect(categoriesFields.anotherCustomId.type).toEqual(
+        new GraphQLNonNull(GraphQLID)
+    );
 });

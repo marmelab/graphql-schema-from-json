@@ -16,6 +16,7 @@ import getTypesFromData from './getTypesFromData';
 import getFilterTypesFromData from './getFilterTypesFromData';
 import { getRelatedType } from './nameConverter';
 import isRelationshipField from './isRelationshipField';
+import defaultGetPrimaryKey from './getPrimaryKey';
 
 /**
  * Get a GraphQL schema from data
@@ -76,14 +77,19 @@ import isRelationshipField from './isRelationshipField';
  * //     removeUser(id: ID!): Boolean
  * // }
  */
-export default data => {
-    const types = getTypesFromData(data);
+export default (data, userOptions = {}) => {
+    const options = {
+        ...{ getPrimaryKey: defaultGetPrimaryKey },
+        ...userOptions,
+    };
+
+    const types = getTypesFromData(data, options);
     const typesByName = types.reduce((types, type) => {
         types[type.name] = type;
         return types;
     }, {});
 
-    const filterTypesByName = getFilterTypesFromData(data);
+    const filterTypesByName = getFilterTypesFromData(data, options);
 
     const listMetadataType = new GraphQLObjectType({
         name: 'ListMetadata',
@@ -95,10 +101,12 @@ export default data => {
     const queryType = new GraphQLObjectType({
         name: 'Query',
         fields: types.reduce((fields, type) => {
+            const primaryKey = options.getPrimaryKey(type.name);
+
             fields[type.name] = {
                 type: typesByName[type.name],
                 args: {
-                    id: { type: new GraphQLNonNull(GraphQLID) },
+                    [primaryKey]: { type: new GraphQLNonNull(GraphQLID) },
                 },
             };
             fields[`all${camelize(pluralize(type.name))}`] = {
@@ -126,13 +134,14 @@ export default data => {
     const mutationType = new GraphQLObjectType({
         name: 'Mutation',
         fields: types.reduce((fields, type) => {
+            const primaryKey = options.getPrimaryKey(type.name);
             const typeFields = typesByName[type.name].getFields();
             const nullableTypeFields = Object.keys(
                 typeFields
             ).reduce((f, fieldName) => {
                 f[fieldName] = Object.assign({}, typeFields[fieldName], {
                     type:
-                        fieldName !== 'id' &&
+                        fieldName !== primaryKey &&
                         typeFields[fieldName].type instanceof GraphQLNonNull
                             ? typeFields[fieldName].type.ofType
                             : typeFields[fieldName].type,
@@ -150,7 +159,7 @@ export default data => {
             fields[`remove${type.name}`] = {
                 type: GraphQLBoolean,
                 args: {
-                    id: { type: new GraphQLNonNull(GraphQLID) },
+                    [primaryKey]: { type: new GraphQLNonNull(GraphQLID) },
                 },
             };
             return fields;
