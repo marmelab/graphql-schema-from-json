@@ -13,8 +13,10 @@
     "lib"
   ],
   "license": "MIT",
-  "engines" : { "node" : ">=8.10" },
-  "engineStrict" : true,
+  "engines": {
+    "node": ">=8.10"
+  },
+  "engineStrict": true,
   "scripts": {
     "build": "make build",
     "format": "make format",
@@ -34,9 +36,8 @@
     "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
-    "@babel/runtime-corejs2": "~7.4.5",
+    "@babel/runtime-corejs3": "7.4.5",
     "@types/jest": "~24.0.13",
-    "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.8.0",
     "eslint": "~5.16.0",
@@ -47,15 +48,14 @@
     "husky": "~2.4.0",
     "jest": "~24.8.0",
     "lint-staged": "~8.2.0",
-    "prettier": "~1.18.0",
+    "prettier": "~1.18.1",
     "rollup": "~1.14.3",
     "rollup-plugin-babel": "^4.0.1",
     "rollup-plugin-commonjs": "~10.0.0",
     "rollup-plugin-json": "~4.0.0",
     "rollup-plugin-node-builtins": "~2.1.2",
     "rollup-plugin-node-globals": "~1.4.0",
-    "rollup-plugin-node-resolve": "~5.0.1",
-    "rollup-watch": "~4.3.1"
+    "rollup-plugin-node-resolve": "~5.0.1"
   },
   "dependencies": {
     "graphql": "~14.3.1",
