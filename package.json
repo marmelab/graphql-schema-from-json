@@ -13,6 +13,8 @@
     "lib"
   ],
   "license": "MIT",
+  "engines" : { "node" : ">=8.10" },
+  "engineStrict" : true,
   "scripts": {
     "build": "make build",
     "format": "make format",
