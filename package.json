@@ -59,7 +59,7 @@
     "rollup-plugin-node-resolve": "~5.2.0"
   },
   "dependencies": {
-    "bl": "4.0.0",
+    "bl": "4.0.3",
     "diff": ">=3.5.0",
     "graphql": "~14.5.8",
     "graphql-type-json": "~0.3.0",
